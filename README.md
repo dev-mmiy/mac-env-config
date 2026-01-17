@@ -1,8 +1,4 @@
-
-# README.md 更新用スクリプト（日本語）
-
-以下のスクリプトは、`mac-env-config` リポジトリの `README.md` を  
-**日本語内容で一括更新**します。
+#README.md
 
 ## ファイル名
 `update-readme.sh`
