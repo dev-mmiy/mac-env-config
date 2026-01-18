@@ -1,3 +1,25 @@
+<<<<<<< HEAD
+=======
+#README.md
+
+## ファイル名
+`update-readme.sh`
+
+---
+
+## スクリプト本体
+
+```bash
+#!/usr/bin/env bash
+set -e
+
+REPO_DIR="$HOME/Development/mac-env-config"
+README="$REPO_DIR/README.md"
+
+echo "📄 Updating README.md in $REPO_DIR"
+
+cat << 'EOF' > "$README"
+>>>>>>> d2252b58b319a2bf2bf62fab2d7d1a967c8c11d5
 # mac-env-config
 
 macOS（Apple Silicon）上で、**開発・LLM・将来のQEMU利用を見据えた、壊れにくく再現可能な開発環境**を構築するための環境定義リポジトリです。
