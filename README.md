@@ -1,25 +1,3 @@
-<<<<<<< HEAD
-=======
-#README.md
-
-## ファイル名
-`update-readme.sh`
-
----
-
-## スクリプト本体
-
-```bash
-#!/usr/bin/env bash
-set -e
-
-REPO_DIR="$HOME/Development/mac-env-config"
-README="$REPO_DIR/README.md"
-
-echo "📄 Updating README.md in $REPO_DIR"
-
-cat << 'EOF' > "$README"
->>>>>>> d2252b58b319a2bf2bf62fab2d7d1a967c8c11d5
 # mac-env-config
 
 macOS（Apple Silicon）上で、**開発・LLM・将来のQEMU利用を見据えた、壊れにくく再現可能な開発環境**を構築するための環境定義リポジトリです。
@@ -33,54 +11,7 @@ macOS（Apple Silicon）上で、**開発・LLM・将来のQEMU利用を見据�
 - **保守性**: 環境定義をコードで管理し、Single Source of TruthとしてGitHubで管理
 - **安全性**: Mac本体を薄く保ち、OS直インストールを最小化
 
-### 設計の基本方針
-
-- **Mac は薄く保つ**: OS直インストールを最小化
-- **環境はコードで管理**: すべての環境定義をGitHubで管理
-- **再現性を最優先**: Mac買い替えや初期化に強い構成
-- **将来の拡張を見据える**: アプリ開発・LLM・QEMUまで対応可能な土台を構築
-
-
-### 設計の基本方針
-
-- **Mac は薄く保つ**: OS直インストールを最小化
-- **環境はコードで管理**: すべての環境定義をGitHubで管理
-- **再現性を最優先**: Mac買い替えや初期化に強い構成
-- **将来の拡張を見据える**: アプリ開発・LLM・QEMUまで対応可能な土台を構築
-
-
-### 設計の基本方針
-
-- **Mac は薄く保つ**: OS直インストールを最小化
-- **環境はコードで管理**: すべての環境定義をGitHubで管理
-- **再現性を最優先**: Mac買い替えや初期化に強い構成
-- **将来の拡張を見据える**: アプリ開発・LLM・QEMUまで対応可能な土台を構築
-
-
-### 設計の基本方針
-
-- **Mac は薄く保つ**: OS直インストールを最小化
-- **環境はコードで管理**: すべての環境定義をGitHubで管理
-- **再現性を最優先**: Mac買い替えや初期化に強い構成
-- **将来の拡張を見据える**: アプリ開発・LLM・QEMUまで対応可能な土台を構築
-
-
-### 設計の基本方針
-
-- **Mac は薄く保つ**: OS直インストールを最小化
-- **環境はコードで管理**: すべての環境定義をGitHubで管理
-- **再現性を最優先**: Mac買い替えや初期化に強い構成
-- **将来の拡張を見据える**: アプリ開発・LLM・QEMUまで対応可能な土台を構築
-
 ## 設計思想
-
-### 設計の基本方針
-
-- **Mac は薄く保つ**: OS直インストールを最小化
-- **環境はコードで管理**: すべての環境定義をGitHubで管理
-- **再現性を最優先**: Mac買い替えや初期化に強い構成
-- **将来の拡張を見据える**: アプリ開発・LLM・QEMUまで対応可能な土台を構築
-
 
 ### 採用した技術スタック（役割分担）
 
@@ -106,10 +37,15 @@ macOS（Apple Silicon）上で、**開発・LLM・将来のQEMU利用を見据�
 ```
 mac-env-config/
 ├── README.md
-└── tool-versions/
-    ├── base.tool-versions    # 最小構成（共通）
-    ├── llm.tool-versions     # LLM / AI 開発向け
-    └── web.tool-versions     # Web / Frontend 向け
+├── Brewfile                  # Homebrewパッケージリスト
+├── tool-versions/
+│   ├── base.tool-versions    # 最小構成（共通）
+│   ├── llm.tool-versions     # LLM / AI 開発向け
+│   └── web.tool-versions     # Web / Frontend 向け
+└── docker/                   # Docker環境構築
+    ├── colima/               # Colima設定
+    ├── compose/              # Docker Composeテンプレート
+    └── examples/             # 実戦的な構成例
 ```
 
 ## 使い方
@@ -140,121 +76,136 @@ mac-env-config/
    git clone https://github.com/your-username/mac-env-config.git ~/Development/mac-env-config
    ```
 
+5. **開発ツールをインストール（Brewfileを使用）**
+   ```bash
+   cd ~/Development/mac-env-config
+   brew bundle install
+   ```
+   
+   これにより、以下のツールがインストールされます：
+   - asdf（言語ランタイム管理）
+   - direnv（環境自動化）
+   - llvm（開発ツール）
+   - colima, docker, docker-compose（Docker環境）
+   
+   または、個別にインストール：
+   ```bash
+   brew install asdf direnv llvm colima docker docker-compose
+   ```
+
+6. **Colimaを起動（Docker環境を使用する場合）**
+   ```bash
+   cd ~/Development/mac-env-config
+   ./docker/colima/start.sh
+   
+   # 動作確認
+   docker ps
+   ```
+   
+   > **注意**: Docker環境を使用しない場合は、このステップはスキップできます。
+
+7. **必要なプラグインを asdf に追加**
+   ```bash
+   asdf plugin add python
+   asdf plugin add nodejs
+   asdf plugin add rust
+   asdf plugin add direnv
+   ```
+
+8. **テンプレートから必要なバージョンをインストール**
+   ```bash
+   # 例: LLM開発環境を構築する場合
+   cd ~/Development/mac-env-config/tool-versions
+   asdf install
+   ```
+
 ### 新しい開発プロジェクトでの利用方法
 
-新しい開発プロジェクトを始める際は、以下の手順で環境を設定します：
+1. **プロジェクトディレクトリを作成**
+   ```bash
+   mkdir my-project
+   cd my-project
+   ```
 
-#### ステップ1: プロジェクトディレクトリを作成
-```bash
-mkdir my-project
-cd my-project
-```
+2. **適切なテンプレートをコピー**
+   ```bash
+   # LLM開発の場合
+   cp ~/Development/mac-env-config/tool-versions/llm.tool-versions .tool-versions
+   
+   # Web開発の場合
+   cp ~/Development/mac-env-config/tool-versions/web.tool-versions .tool-versions
+   
+   # 最小構成の場合
+   cp ~/Development/mac-env-config/tool-versions/base.tool-versions .tool-versions
+   ```
 
-#### ステップ2: 適切なテンプレートをコピー
-プロジェクトの種類に応じて、適切な `.tool-versions` テンプレートをコピーします：
+3. **必要なバージョンをインストール**
+   ```bash
+   asdf install
+   ```
 
-```bash
-# LLM開発の場合（Python + Node + Rust + direnv）
-cp ~/Development/mac-env-config/tool-versions/llm.tool-versions .tool-versions
+4. **direnv を設定（自動環境切替を有効化）**
+   ```bash
+   echo "use asdf" > .envrc
+   direnv allow
+   ```
 
-# Web開発の場合（Node + direnv）
-cp ~/Development/mac-env-config/tool-versions/web.tool-versions .tool-versions
+5. **動作確認**
+   ```bash
+   # プロジェクトディレクトリに cd するだけで、正しいバージョンが自動有効化される
+   cd ..
+   cd my-project
+   python --version  # 正しいバージョンが表示される
+   node --version    # 正しいバージョンが表示される
+   ```
 
-# 最小構成の場合（Python + Node + direnv）
-cp ~/Development/mac-env-config/tool-versions/base.tool-versions .tool-versions
-```
+### 現在できること
 
-#### ステップ3: 必要なバージョンをインストール
-```bash
-asdf install
-```
+- ✅ 新しいMacでも `Homebrew → mac-env-config clone → asdf install` だけで環境が復旧可能
+- ✅ プロジェクトディレクトリに `cd` するだけで、正しい Python / Node / Rust が有効化
+- ✅ 手動切替・ミスが発生しない（direnv × asdf の自動連携）
+- ✅ **Colima + Docker Compose による軽量なDocker環境**が利用可能
+- ✅ LLM / Web / CLI / 将来のQEMUまで拡張可能な土台が完成
 
-このコマンドで、`.tool-versions` に記載されているすべての言語・ツールのバージョンがインストールされます。
+## Colima + Docker Compose
 
-#### ステップ4: direnv を設定（自動環境切替を有効化）
-```bash
-echo "use asdf" > .envrc
-direnv allow
-```
+Docker Desktopを使わない、軽量なDocker環境を構築できます。詳細は [docker/README.md](./docker/README.md) を参照してください。
 
-これにより、プロジェクトディレクトリに `cd` するだけで、自動的に正しいバージョンの環境が有効化されます。
+> **注意**: Colimaのインストールと起動は、上記の「初回セットアップ」手順に含まれています。
 
-**一言で言うと**: 「macOS 上に、再現性と拡張性を最優先した"環境基盤"が完成した状態」です。アプリ開発・LLM・仮想化はすべてこの上に積むだけです。
-
-
-#### ステップ5: 動作確認
-```bash
-# 一度ディレクトリを出て、再度入る
-cd ..
-cd my-project
-
-# 正しいバージョンが自動有効化されているか確認
-python --version  # .tool-versions で指定したバージョンが表示される
-node --version    # .tool-versions で指定したバージョンが表示される
-rustc --version   # LLM環境の場合、Rustのバージョンも表示される
-```
-
-#### 補足: テンプレートの選択ガイド
-
-| プロジェクトタイプ | 推奨テンプレート | 含まれるツール |
-|-------------------|----------------|---------------|
-| LLM / AI開発 | `llm.tool-versions` | Python, Node, Rust, direnv |
-| Web / Frontend開発 | `web.tool-versions` | Node, direnv |
-| 汎用開発（最小構成） | `base.tool-versions` | Python, Node, direnv |
+### プロジェクトでDocker Composeを使用
 
 ```bash
-asdf install
+# テンプレートをコピー
+cp ~/Development/mac-env-config/docker/compose/docker-compose.dev.yml docker-compose.yml
+
+# サービスを起動
+docker-compose up -d
 ```
 
-このコマンドで、`.tool-versions` に記載されているすべての言語・ツールのバージョンがインストールされます。
+### よく使うコマンド
 
-#### ステップ4: direnv を設定（自動環境切替を有効化）
 ```bash
-echo "use asdf" > .envrc
- direnv allow
+# Colimaを起動
+./docker/colima/start.sh
+
+# Colimaを停止
+colima stop
+
+# Colimaの状態を確認
+colima status
+
+# Docker Composeのログを確認
+docker-compose logs -f
 ```
 
-これにより、プロジェクトディレクトリに `cd` するだけで、自動的に正しいバージョンの環境が有効化されます。
-
-#### ステップ5: 動作確認
-```bash
-# 一度ディレクトリを出て、再度入る
-cd ..
-cd my-project
-
-# 正しいバージョンが自動有効化されているか確認
-python --version  # .tool-versions で指定したバージョンが表示される
-node --version    # .tool-versions で指定したバージョンが表示される
-rustc --version   # LLM環境の場合、Rustのバージョンも表示される
-```
-
-#### 補足: テンプレートの選択ガイド
-
-| プロジェクトタイプ | 推奨テンプレート | 含まれるツール |
-|-------------------|----------------|---------------|
-| LLM / AI開発 | `llm.tool-versions` | Python, Node, Rust, direnv |
-| Web / Frontend開発 | `web.tool-versions` | Node, direnv |
-| 汎用開発（最小構成） | `base.tool-versions` | Python, Node, direnv |
-
-### 現在できること（現在地）
-
-**一言で言うと**: 「macOS 上に、再現性と拡張性を最優先した"環境基盤"が完成した状態」です。アプリ開発・LLM・仮想化はすべてこの上に積むだけです。
-
-
-現在の環境では、以下のことが実現できています：
-
-- ✅ **新しいMacでも環境復旧が簡単**: `Homebrew → mac-env-config clone → asdf install` だけで環境が復旧可能
-- ✅ **自動環境切替**: プロジェクトディレクトリに `cd` するだけで、正しい Python / Node / Rust が有効化
-- ✅ **ミス防止**: 手動切替・ミスが発生しない（direnv × asdf の自動連携）
-- ✅ **拡張可能な基盤**: LLM / Web / CLI / 将来のQEMUまで拡張可能な土台が完成
-
-**一言で言うと**: 「macOS 上に、再現性と拡張性を最優先した"環境基盤"が完成した状態」です。アプリ開発・LLM・仮想化はすべてこの上に積むだけです。
+詳細な使用方法やテンプレートについては、[docker/README.md](./docker/README.md) を参照してください。
 
 ## この後の作業（次のフェーズ）
 
 現在の環境基盤の上に、以下の機能を追加していく予定です：
 
-### 1. Colima + Docker Compose の実戦構成
+### 1. ✅ Colima + Docker Compose の実戦構成（完了）
 - Docker Desktop を使わない、軽量なDocker環境の構築
 - Docker Compose を使った開発環境の定義
 - 実戦的な構成の整備
@@ -262,17 +213,14 @@ rustc --version   # LLM環境の場合、Rustのバージョンも表示され�
 ### 2. QEMU 用ディレクトリ・起動スクリプト
 - CPU・OS検証のためのQEMU環境構築
 - 起動スクリプトの整備
-- 仮想化環境の標準化
 
 ### 3. bootstrap.sh による完全自動初期化
 - 初回セットアップを完全自動化するスクリプト
 - 新しいMacでの環境構築をワンコマンドで実行可能に
-- セットアップ手順の完全自動化
 
 ### 4. LLM（MLX / Ollama）実行環境構築
 - Apple Silicon向けのLLM実行環境
 - MLX / Ollama のセットアップと設定
-- LLM開発に特化した環境の整備
 
 ## 運用ルール
 
@@ -320,6 +268,21 @@ asdf list all <plugin-name>
 
 # バージョンをインストール
 asdf install <plugin-name> <version>
+```
+
+### Colima + Docker Compose のトラブルシューティング
+
+詳細は [docker/README.md](./docker/README.md) を参照してください。
+
+```bash
+# Colimaの状態を確認
+colima status
+
+# Colimaを再起動
+colima restart
+
+# Docker Composeのログを確認
+docker-compose logs -f
 ```
 
 ## ライセンス

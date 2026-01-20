@@ -1,0 +1,31 @@
+# Colima設定ファイル
+# 使用方法: colima start --config docker/colima/colima.yaml
+
+# CPU数（推奨: 4以上）
+cpu: 4
+
+# メモリ（GB単位、推奨: 8GB以上）
+memory: 8
+
+# ディスクサイズ（GB単位）
+disk: 60
+
+# アーキテクチャ（Apple Siliconの場合は自動検出）
+# arch: aarch64
+
+# ネットワーク設定
+network:
+  # ネットワークドライバー
+  driver: vmnet
+
+# マウント設定
+mounts:
+  # ホームディレクトリをマウント
+  - location: ~
+    writable: true
+
+# 環境変数
+env:
+  # Docker BuildKitを有効化
+  DOCKER_BUILDKIT: "1"
+  COMPOSE_DOCKER_CLI_BUILD: "1"

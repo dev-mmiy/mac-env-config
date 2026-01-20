@@ -1,0 +1,85 @@
+version: '3.8'
+
+# 開発環境用のDocker Compose設定
+# 使用方法: docker-compose -f docker-compose.dev.yml up
+
+services:
+  # 開発用Webアプリケーション
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: ${APP_NAME:-myapp}-dev
+    ports:
+      - "${APP_PORT:-3000}:3000"
+      - "${DEBUG_PORT:-9229}:9229"  # Node.jsデバッグポート
+    environment:
+      - NODE_ENV=development
+      - DEBUG=*
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next  # Next.jsの場合
+    depends_on:
+      - db
+      - redis
+    networks:
+      - app-network
+    restart: unless-stopped
+    command: npm run dev
+
+  # PostgreSQL（開発用）
+  db:
+    image: postgres:15-alpine
+    container_name: ${DB_NAME:-postgres}-dev
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-mydb}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+      - ./docker/db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  # Redis（開発用）
+  redis:
+    image: redis:7-alpine
+    container_name: ${REDIS_NAME:-redis}-dev
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_dev_data:/data
+    networks:
+      - app-network
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+
+  # pgAdmin（開発用、オプション）
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: ${PGADMIN_NAME:-pgadmin}-dev
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@example.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - app-network
+    restart: unless-stopped
+    depends_on:
+      - db
+
+volumes:
+  postgres_dev_data:
+  redis_dev_data:
+  pgadmin_data:
+
+networks:
+  app-network:
+    driver: bridge
